@@ -6,7 +6,7 @@ from pymem.process import *
 from sys import stdout
 import Conexion as interop
 import pyautogui
-
+import asyncio
 
 def Bienvenida():
     print("""\033[;31m"""+"""
@@ -35,7 +35,7 @@ os.system("cls")
 
 
 def GetPointer(pm, base, offsets):
-    addr = pm.read_longlong(base + 0x02C72258)
+    addr = pm.read_longlong(base + 0x02C7B258)
     for offset in offsets:
         if offset != offsets[-1]:
             try:
@@ -47,7 +47,7 @@ def GetPointer(pm, base, offsets):
 
 
 def GetPointer2(pm, base, offsets):
-    addr = pm.read_longlong(base + 0x02C72258)
+    addr = pm.read_longlong(base + 0x02C7B258)
     for offset in offsets:
         if offset != offsets[-1]:
             try:
@@ -59,7 +59,7 @@ def GetPointer2(pm, base, offsets):
 
 
 def GetPointer3(pm, base, offsets):
-    addr = pm.read_longlong(base + 0x02C72258)
+    addr = pm.read_longlong(base + 0x02C7B258)
     for offset in offsets:
         if offset != offsets[-1]:
             try:
@@ -69,24 +69,24 @@ def GetPointer3(pm, base, offsets):
                 return False
     return addr
 
-
 def main():
     try:
+
         lecturadevida = 0
         # trackvida
-        offsets = [0x88, 0x580]
+        offsets = [0x50, 0x580]
         offsetvida = (0x580)  # offset
         # vidainicial poe
-        offsets2 = [0x90,0x28,0x50, 0x30, 0x0, 0x40, 0x210]
-        offsetvida2 = (0x210)  # offset
+        offsets2 = [0x50,0x578]
+        offsetvida2 = (0x578)  # offset
 
         # manatrack
-        offsets3 = [0x58,0x90,0x48, 0x280]
-        offsetmana3 = (0x280)  # offset
+        offsets3 = [0x88,0xB80]
+        offsetmana3 = (0xB80)  # offset
 
         # manainicial
-        offsets4 = [0x58,0x58,0x30,0x0, 0x38, 0x28, 0x1D8]
-        offsetmana4 = (0x1D8)  # offset
+        offsets4 = [0x50,0xB78]
+        offsetmana4 = (0xB78)  # offset
 
         string = str(interop.get_process_name(
             (interop.find_process(b'PathOfExile'))))
@@ -117,6 +117,7 @@ def main():
 
         Bienvenida()
         while True:
+            contador = 0
             lecturademanaInicial = pm.read_int(union4)
             lecturademana = pm.read_int(union3)
             lecturadevida = pm.read_int(union)
@@ -135,15 +136,22 @@ def main():
                 pyautogui.press("1")
                 break
             elif lecturademana <= lecturademanaInicial and lecturademana <= (lecturademanaInicial - ((30 * lecturademanaInicial)/100)):
-                pyautogui.press("5")
+                if contador == 0:
+                    pyautogui.press("5")
+                    contador+=1
+                    break
+                elif contador >= 1:
+                    contador+=1
+                    if contador == 300:
+                        contador=0
+                    break
+                        
                 break
 
     except Exception as e:
         print(e)
 
-    def getVidaIncial():
-        return lecturadevidaInicial
 
-
+    
 while True:
     main()
